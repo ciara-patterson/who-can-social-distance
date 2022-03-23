@@ -17,7 +17,7 @@ def scale_data(X_train, X_test):
     return (X_train, X_test)
 
 def build_rand_forest_reg(features, results, scale_test_data = True, 
-                          estimators = 100, max_depth = 80, return_model = False):
+                          estimators = 100, max_depth = 80, output = True):
     '''Builds random forest regressor that predicts the results col from the other information included in 
     features dataset. Returns either 2 dataframes, one with the test values and predicted values for each county 
     or the model itself is returned.'''
@@ -50,22 +50,25 @@ def build_rand_forest_reg(features, results, scale_test_data = True,
     # Sort the feature importances by most important first
     feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse = True)
 
-    # Print out the feature and importances 
-    print('\n---\nFEATURE IMPORTANCE \n---\n')
-    [print('{:20} Importance: {}'.format(*pair)) for pair in feature_importances]
+    if output:
+        # Print out the feature and importances 
+        print('\n---\nFEATURE IMPORTANCE \n---\n')
+        [print('{:20} Importance: {}'.format(*pair)) for pair in feature_importances]
+    
     feat_importance_df = pd.DataFrame(feature_importances, columns = ['feature', 'importance'])
     
-    # print model scores
-    print('\n---\nMODEL SCORES \n---\n')
-    
-    print('R^2 Training Score: {:.2f} \nOOB Score: {:.2f} \nR^2 Validation Score: {:.2f}'.format(reg.score(X_train, y_train), 
-                                                                                             reg.oob_score_,
-                                                                                             reg.score(X_test, y_test)))
-    # print model error
-    print('\n---\nMODEL ERROR \n---\n')
-    print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, y_pred_reg))
-    print('Mean Squared Error:', metrics.mean_squared_error(y_test, y_pred_reg))
-    print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test, y_pred_reg)))
+    if output:
+        # print model scores
+        print('\n---\nMODEL SCORES \n---\n')
+        
+        print('R^2 Training Score: {:.2f} \nOOB Score: {:.2f} \nR^2 Validation Score: {:.2f}'.format(reg.score(X_train, y_train), 
+                                                                                                reg.oob_score_,
+                                                                                                reg.score(X_test, y_test)))
+        # print model error
+        print('\n---\nMODEL ERROR \n---\n')
+        print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, y_pred_reg))
+        print('Mean Squared Error:', metrics.mean_squared_error(y_test, y_pred_reg))
+        print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test, y_pred_reg)))
 
     # create a dataframe with predicted values
     preds_df = pd.DataFrame(zip(features.index, y_test, y_pred_reg), columns = ['fips', 'y_test', 'RRF_pred'])

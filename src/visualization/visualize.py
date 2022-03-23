@@ -6,6 +6,7 @@ from sklearn.tree import export_graphviz
 from subprocess import call 
 from IPython.display import Image
 from types import MappingProxyType
+import pydot
 
 # USED TO FORMAT FIGURES
 PRETTY_NAMES = MappingProxyType(
@@ -53,7 +54,7 @@ def plot_real_predicted_scatter(preds_and_feats, figure_name):
         plt.scatter(preds_and_feats[feat], preds_and_feats.RRF_pred, c = 'r', alpha = 0.8, marker = '.', label = 'Predicted')
         
         title_str = 'Real and Predicted Average New COVID-19 Cases in the Test Dataset ($n$  = {})'
-        plt.title(title_str.format(len(preds_and_feat.index())))
+        plt.title(title_str.format(len(preds_and_feats.index())))
         
         plt.xlabel(feat)
         plt.ylabel('Average New COVID-19 Cases per 100k People')
@@ -124,12 +125,12 @@ def plot_correlation_coefficient(figure_name, features_w_anc):
     plt.savefig(figure_name, bbox_inches = 'tight')
     return feat_corr_df
 
-def plot_tree_estimator(regr_model, feature_list, estimator_n = 5):
+def create_tree_estimator_png(regr_model, feature_list, estimator_n = 5):
         
     estimator = regr_model.estimators_[estimator_n]
     export_graphviz(estimator, out_file = 'reports/figures/tree.dot', 
                     feature_names = feature_list,
                     rounded = True, proportion = False, 
                     precision = 2, filled = True)
-    
-    call(['dot', '-Tpng', 'reports/figures/tree.dot', '-o', 'reports/figures/tree.png', '-Gdpi=600'], shell = True)
+    graphs = pydot.graph_from_dot_file('reports/figures/tree.dot')
+    graphs[0].write_png('reports/figures/tree.png')

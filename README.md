@@ -1,6 +1,8 @@
 # who-can-social-distance
 
-This repository contains the code, visualizations, presentations, final paper for my Gonzaga University Honors college senior thesis which investigated the effects of socioeconomic and behavioral factors on the spread of COVID-19. Some code is not included in this repository as it relied on private APIs or data repository that I was able to access from within Talus Analytics.
+This repository contains the code, visualizations, presentations, final paper for my Gonzaga University Honors college senior thesis which investigated the effects of socioeconomic and behavioral factors on the spread of COVID-19. 
+
+Some code is not included in this repository as it relied on private APIs or data repository that I was able to access from within Talus Analytics. Additionally, some code testing out different features and models has not been moved into the public repository yet.
 
 # Table of contents
 

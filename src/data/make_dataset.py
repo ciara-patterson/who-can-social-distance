@@ -7,31 +7,16 @@ import sys
 sys.path.append('../..')
 sys.path.append('..')
 
-class CountiesDataset:
-    '''
-    The US county dataset from which the predictive model can be built. 
-    It contains both features and the average number of COVID-19 cases 
-    during policies that met the inclusion criteria (value that we are predicting).
-
-    Attributes
-        dataset: A DataFrame where each county is a row and each column is a feature
-            or the average number of cases. The index is the county FIPS codes.
-    
-    '''
+class CountiesWithPolicies:
 
     def __init__(self, load = True) -> None:
-        '''
-        Initiates a simple county dataset. To save time, once the dataset is created once,
-        it can be loaded from a CSV (load = True).
-        '''
         if load:
             file_path = 'data/processed/county_dataset.csv'
             self.dataset = pd.read_csv(file_path, index_col = 0)
             self.dataset['start_date'] = self.dataset['start_date'].apply(lambda x : datetime.strptime(x, '%Y-%m-%d'))
         else:
             self.dataset = self.build_dataset()
-            self.dataset.to_csv('data/processed/features_dataset.csv')
-         
+
     def build_dataset(self):
         cases = get_nyt_case_data() 
 
@@ -51,23 +36,17 @@ class CountiesDataset:
         case_results = get_results(start_end_df, cases)
 
         # get basic features for these counties 
-        features = CountyFeatures(fips_codes = cases.index.unique.tolist())
+        features = BasicCountyDataset(fips_codes = cases.index.unique.tolist())
         features.build_features_dataset()
         
         self.dataset = case_results.merge(features, left_index = True, right_index = True)
 
+    def write_dataset(self):
+        self.dataset.to_csv('data/processed/features_dataset.csv')
 
 
-class CountyFeatures:
-    ''' 
-    The US County dataset with the features that are used in the final model 
-    (% racial minority, % reported frequent or always mask use, etc.)
-
-    Attributes:
-        fips_codes (list): County FIPS codes to be included in the dataset 
-        features_dataset (DataFrame): DataFrame where each row is a county 
-            and each feature is a column. fips_codes is the index.
-    '''
+class BasicCountyDataset:
+    ''' summary tbd '''
 
     def __init__(self, fips_codes, starting_dataset = None):
         self.fips_codes = fips_codes
